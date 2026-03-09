@@ -1,0 +1,35 @@
+import pyodbc
+
+# 1) Connect to master & create DWH
+conn = pyodbc.connect(
+    "DRIVER={ODBC Driver 17 for SQL Server};"
+    "SERVER=LITTLE-DUY\\SQLEXPRESS;"
+    "DATABASE=master;"
+    "Trusted_Connection=yes;"
+)
+conn.autocommit = True
+
+print("Connected successfully to Master")
+
+cursor = conn.cursor()
+
+cursor.execute("""
+    IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'DWH')
+    CREATE DATABASE DWH
+""")
+
+print("Database DWH is ready")
+
+cursor.close()
+conn.close()
+
+# 2) Connect to DWH
+conn = pyodbc.connect(
+    "DRIVER={ODBC Driver 17 for SQL Server};"
+    "SERVER=LITTLE-DUY\\SQLEXPRESS;"
+    "DATABASE=DWH;"
+    "Trusted_Connection=yes;"
+)
+conn.autocommit = True
+
+print("Connected successfully to DWH")
